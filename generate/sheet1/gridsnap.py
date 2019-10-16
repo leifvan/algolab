@@ -1,0 +1,6 @@
+class GridSnap:
+    def get_random_instance(self):
+        ...
+
+    def special_instances(self):
+        ...
