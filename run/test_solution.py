@@ -7,11 +7,11 @@ from time import time
 from difflib import Differ
 import json
 import sys
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument('problem_sheet')
 parser.add_argument('problem_name')
-parser.add_argument('solution_path')
 parser.add_argument('-num_random_instances', default=60, type=int)
 parser.add_argument('-verbose', default=None)
 parser.add_argument('-pedantic', action='store_true')
@@ -19,6 +19,7 @@ parser.add_argument('-pedantic', action='store_true')
 args = parser.parse_args()
 
 TIMEOUT = 1
+solution_path = os.path.join('..','solutions',args.problem_sheet, args.problem_name+'.py')
 
 
 # TODO capture more exceptions here
@@ -30,7 +31,7 @@ def run_instance(instance):
 
     try:
         start_time = time()
-        run_result = run(args=['runenv/python', args.solution_path],
+        run_result = run(args=['runenv/python', solution_path],
                          timeout=TIMEOUT,
                          input=instance_in,
                          text=True,
@@ -77,7 +78,7 @@ def run_instances(instances, desc, total, special):
             if args.verbose == 'all' or args.verbose == 'error' and not r['success']:
                 print(json.dumps(r, indent=2))
 
-                if r['error'] == 'incorrect result':
+                if not r['success'] and r['error'] == 'incorrect result':
                     print("Diff of the results:")
                     print("-")
                     diff = Differ().compare(r['stdout'].splitlines(), r['instance_out'].splitlines())
