@@ -1,6 +1,7 @@
 import json
 from time import strftime
 import os
+from argparse import Namespace
 
 
 class TestResults:
@@ -28,25 +29,35 @@ class TestResults:
         res_obj = {'timestamp': self.timestamp,
                    'problem_sheet': self.problem_sheet,
                    'problem_name': self.problem_name,
+                   **self.get_summary_stats().__dict__,
                    'results': self.results}
         with open(path, 'x') as file:
             json.dump(res_obj, file, indent=2)
 
-    def print_summary(self):
+    def get_summary_stats(self):
         total_time = sum(r['duration'] for r in self.results)
         avg_time = total_time / len(self.results)
-        print(f"Ran {len(self.results)} instances in {total_time:.1f}s (~{avg_time:.2f}s/instance)")
-
         num_special = sum(1 for r in self.results if r['special'])
         hit_special = sum(1 for r in self.results if r['special'] and r['success'])
         num_random = len(self.results) - num_special
         hit_random = sum(1 for r in self.results if not r['special'] and r['success'])
 
-        print(f"- {hit_random}/{num_random} random instances correct")
-        print(f"- {hit_special}/{num_special} special instances correct")
+        return Namespace(total_time=total_time,
+                         avg_time=avg_time,
+                         num_special=num_special,
+                         hit_special=hit_special,
+                         num_random=num_random,
+                         hit_random=hit_random)
+
+    def print_summary(self):
+        s = self.get_summary_stats()
+
+        print(f"Ran {len(self.results)} instances in {s.total_time:.1f}s (~{s.avg_time:.2f}s/instance)")
+        print(f"- {s.hit_random}/{s.num_random} random instances correct")
+        print(f"- {s.hit_special}/{s.num_special} special instances correct")
 
         print()
-        if hit_special == num_special and hit_random == num_random:
+        if s.hit_special == s.num_special and s.hit_random == s.num_random:
             print("SUCCESS!")
         else:
             print("FAILED!")
