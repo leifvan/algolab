@@ -14,3 +14,8 @@ generators['sheet1'] = {'kmeans1': KMeans1}
 
 from generate.sheet1.areapoly import AreaPoly
 generators['sheet1'] = {'areapoly': AreaPoly}
+
+from generate.sheet1.matrixmul import MatrixMul
+generators['sheet1'] = {'matrixmul': MatrixMul}
+
+
