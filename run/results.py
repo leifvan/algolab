@@ -60,7 +60,7 @@ class TestResults:
     def print_summary(self):
         s = self.get_summary_stats()
 
-        print(f"Ran {len(self.results)} instances in {s.total_time:.1f}s (~{s.avg_time:.2f}s/instance)")
+        print(f"Ran {len(self.results)} instances in {s.total_time:.2f}s (~{s.avg_time:.4f}s/instance)")
         print(f"- {s.hit_random}/{s.num_random} random instances correct")
         print(f"- {s.hit_special}/{s.num_special} special instances correct")
 
