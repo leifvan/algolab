@@ -6,10 +6,11 @@ from collections import Counter
 
 
 class TestResults:
-    def __init__(self, problem_sheet, problem_name):
+    def __init__(self, problem_sheet, problem_name, timeout):
         self.timestamp = strftime("%Y%m%d_%H%M%S")
         self.problem_sheet = problem_sheet
         self.problem_name = problem_name
+        self.timeout = timeout
         self.results = []
 
     def add_result(self, instance_in, instance_out, success, stdout, stderr, duration, error=None, special=False):
@@ -30,6 +31,7 @@ class TestResults:
         res_obj = {'timestamp': self.timestamp,
                    'problem_sheet': self.problem_sheet,
                    'problem_name': self.problem_name,
+                   'timeout': self.timeout,
                    **self.get_summary_stats().__dict__,
                    'results': self.results}
         with open(path, 'x') as file:
@@ -43,7 +45,7 @@ class TestResults:
         num_random = len(self.results) - num_special
         hit_random = sum(1 for r in self.results if not r['special'] and r['success'])
 
-        num_errors = Counter([r['error'] for r in self.results if hasattr(r,'error')]).most_common()
+        num_errors = Counter([r['error'] for r in self.results if 'error' in r])
 
         return Namespace(total_time=total_time,
                          avg_time=avg_time,
@@ -66,5 +68,5 @@ class TestResults:
         else:
             print("FAILED!")
             print()
-            for err, count in s.num_errors:
+            for err, count in s.num_errors.most_common():
                 print(f"- {count}x {err}")

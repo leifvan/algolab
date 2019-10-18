@@ -15,10 +15,10 @@ parser.add_argument('problem_name')
 parser.add_argument('-num_random_instances', default=60, type=int)
 parser.add_argument('-verbose', default=None)
 parser.add_argument('-pedantic', action='store_true')
+parser.add_argument('-timeout', default=1, type=int)
 
 args = parser.parse_args()
 
-TIMEOUT = 1
 solution_path = os.path.join('..','solutions',args.problem_sheet, args.problem_name+'.py')
 
 
@@ -32,7 +32,7 @@ def run_instance(instance):
     try:
         start_time = time()
         run_result = run(args=['runenv/python', solution_path],
-                         timeout=TIMEOUT,
+                         timeout=args.timeout,
                          input=instance_in,
                          text=True,
                          capture_output=True)
@@ -41,7 +41,7 @@ def run_instance(instance):
         data['stderr'] = e.stderr
         data['error'] = 'timeout'
         data['success'] = False
-        data['duration'] = TIMEOUT
+        data['duration'] = args.timeout
 
     else:
         duration = time() - start_time
@@ -64,7 +64,7 @@ def run_instance(instance):
 
 
 generator = generators[args.problem_sheet][args.problem_name]
-results = TestResults(args.problem_sheet, args.problem_name)
+results = TestResults(args.problem_sheet, args.problem_name, args.timeout)
 
 
 def run_instances(instances, desc, total, special):
