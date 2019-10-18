@@ -6,11 +6,12 @@ from collections import Counter
 
 
 class TestResults:
-    def __init__(self, problem_sheet, problem_name, timeout):
+    def __init__(self, problem_sheet, problem_name, timeout, lang):
         self.timestamp = strftime("%Y%m%d_%H%M%S")
         self.problem_sheet = problem_sheet
         self.problem_name = problem_name
         self.timeout = timeout
+        self.lang = lang
         self.results = []
 
     def add_result(self, instance_in, instance_out, success, stdout, stderr, duration, error=None, special=False):
@@ -27,11 +28,12 @@ class TestResults:
         self.results.append(r)
 
     def save_report(self, dir):
-        path = os.path.join(dir, f"{self.problem_sheet}_{self.problem_name}_{self.timestamp}")
+        path = os.path.join(dir, f"{self.problem_sheet}_{self.problem_name}_{self.lang}_{self.timestamp}")
         res_obj = {'timestamp': self.timestamp,
                    'problem_sheet': self.problem_sheet,
                    'problem_name': self.problem_name,
                    'timeout': self.timeout,
+                   'lang': self.lang,
                    **self.get_summary_stats().__dict__,
                    'results': self.results}
         with open(path, 'x') as file:

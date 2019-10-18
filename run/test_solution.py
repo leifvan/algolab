@@ -12,6 +12,7 @@ import os
 parser = argparse.ArgumentParser()
 parser.add_argument('problem_sheet')
 parser.add_argument('problem_name')
+parser.add_argument('lang', choices=('py','cpp'))
 parser.add_argument('-num_random_instances', default=60, type=int)
 parser.add_argument('-verbose', default=None)
 parser.add_argument('-pedantic', action='store_true')
@@ -19,7 +20,13 @@ parser.add_argument('-timeout', default=1, type=int)
 
 args = parser.parse_args()
 
-solution_path = os.path.join('..','solutions',args.problem_sheet, args.problem_name+'.py')
+solution_path = os.path.join('..','solutions',args.problem_sheet, args.problem_name+'.'+args.lang)
+
+
+# compile if necessary
+if args.lang == 'cpp':
+    run(f'g++ -std=c++11 -x c++ -Wall -O2 -static -pipe {solution_path}'.split(),
+        check=True)
 
 
 # TODO capture more exceptions here
@@ -30,8 +37,13 @@ def run_instance(instance):
                 instance_out=instance_out)
 
     try:
+        if args.lang == 'py':
+            run_args = ['runenv/python', solution_path]
+        elif args.lang == 'cpp':
+            run_args = ['a.exe']
+
         start_time = time()
-        run_result = run(args=['runenv/python', solution_path],
+        run_result = run(args=run_args,
                          timeout=args.timeout,
                          input=instance_in,
                          text=True,
@@ -64,7 +76,7 @@ def run_instance(instance):
 
 
 generator = generators[args.problem_sheet][args.problem_name]
-results = TestResults(args.problem_sheet, args.problem_name, args.timeout)
+results = TestResults(args.problem_sheet, args.problem_name, args.timeout, args.lang)
 
 
 def run_instances(instances, desc, total, special):
