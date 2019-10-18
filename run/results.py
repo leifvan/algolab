@@ -2,6 +2,7 @@ import json
 from time import strftime
 import os
 from argparse import Namespace
+from collections import Counter
 
 
 class TestResults:
@@ -42,12 +43,15 @@ class TestResults:
         num_random = len(self.results) - num_special
         hit_random = sum(1 for r in self.results if not r['special'] and r['success'])
 
+        num_errors = Counter([r['error'] for r in self.results if hasattr(r,'error')]).most_common()
+
         return Namespace(total_time=total_time,
                          avg_time=avg_time,
                          num_special=num_special,
                          hit_special=hit_special,
                          num_random=num_random,
-                         hit_random=hit_random)
+                         hit_random=hit_random,
+                         num_errors=num_errors)
 
     def print_summary(self):
         s = self.get_summary_stats()
@@ -61,3 +65,6 @@ class TestResults:
             print("SUCCESS!")
         else:
             print("FAILED!")
+            print()
+            for err, count in s.num_errors:
+                print(f"- {count}x {err}")
