@@ -93,7 +93,9 @@ def run_instances(instances, desc, total, special):
                 if not r['success'] and r['error'] == 'incorrect result':
                     print("Diff of the results:")
                     print("-")
-                    diff = Differ().compare(r['stdout'].splitlines(), r['instance_out'].splitlines())
+                    diff = [f"{a} != {b}" for a,b in zip(r['stdout'].splitlines(),
+                                                         r['instance_out'].splitlines())
+                            if a != b]
                     print('\n'.join(diff))
                     print("-")
 
