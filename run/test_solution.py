@@ -12,7 +12,7 @@ import os
 parser = argparse.ArgumentParser()
 parser.add_argument('problem_sheet')
 parser.add_argument('problem_name')
-parser.add_argument('lang', choices=('py','cpp'))
+parser.add_argument('lang', choices=('py', 'cpp'))
 parser.add_argument('-num_random_instances', default=60, type=int)
 parser.add_argument('-verbose', default=None)
 parser.add_argument('-pedantic', action='store_true')
@@ -20,8 +20,7 @@ parser.add_argument('-timeout', default=1, type=int)
 
 args = parser.parse_args()
 
-solution_path = os.path.join('..','solutions',args.problem_sheet, args.problem_name+'.'+args.lang)
-
+solution_path = os.path.join('..', 'solutions', args.problem_sheet, args.problem_name + '.' + args.lang)
 
 # compile if necessary
 if args.lang == 'cpp':
@@ -62,7 +61,8 @@ def run_instance(instance):
             data['error'] = 'execution failed'
             data['success'] = False
         else:
-            if run_result.stdout == instance_out:
+            if (run_result.stdout == instance_out
+                    or args.verbose == 'debug' and run_result.stdout.endswith(instance_out)):
                 data['success'] = True
             else:
                 data['success'] = False
@@ -87,14 +87,18 @@ def run_instances(instances, desc, total, special):
         r = run_instance(instance)
 
         if args.verbose is not None:
+            if args.verbose == 'debug':
+                print("--- DEBUG ---")
+                print(r['stdout'])
+                print("--- END DEBUG ---")
             if args.verbose == 'all' or args.verbose == 'error' and not r['success']:
                 print(json.dumps(r, indent=2))
 
                 if not r['success'] and r['error'] == 'incorrect result':
                     print("Diff of the results:")
                     print("-")
-                    diff = [f"{a} != {b}" for a,b in zip(r['stdout'].splitlines(),
-                                                         r['instance_out'].splitlines())
+                    diff = [f"{a} != {b}" for a, b in zip(r['stdout'].splitlines(),
+                                                          r['instance_out'].splitlines())
                             if a != b]
                     print('\n'.join(diff))
                     print("-")
