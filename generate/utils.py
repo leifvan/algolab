@@ -1,6 +1,7 @@
 from math import log10, floor
 from random import randint
 import numpy as np
+from shapely.geometry import Polygon, LinearRing
 
 def int_to_dec(i):
     sgn = '-' if i < 0 else ''
@@ -32,6 +33,31 @@ def generate_star_polygon(n, max_radius, shift_range):
         p += shift
 
     return p
+
+
+def generate_simple_polygon(n, max_radius, shift_range):
+    polygon = None
+
+    while polygon is None or not polygon.is_valid:
+        # generate random points inside circle of max_radius
+        angles = np.random.random(n) * 2 * np.pi
+        radii = np.random.random(n) * max_radius
+
+        # determine cartesian coords and round
+        p = np.round(radii * np.stack([np.cos(angles), np.sin(angles)])).T
+
+        # shuffle a bit before retrying completely
+        for _ in range(100):
+            polygon = Polygon(shell=np.random.shuffle(p))
+            if polygon.is_valid:
+                break
+
+    if shift_range > 0:
+        shift = np.random.randint(-shift_range, shift_range, size=2)
+        p += shift
+
+    return p
+
 
 
 if __name__ == '__main__':

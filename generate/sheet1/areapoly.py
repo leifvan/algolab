@@ -1,5 +1,5 @@
 import numpy as np
-from utils import generate_star_polygon
+from utils import generate_simple_polygon
 
 
 class AreaPoly:
@@ -7,7 +7,7 @@ class AreaPoly:
     def get_random_instance():
         n = np.random.randint(3,20)
 
-        p = generate_star_polygon(n, 500, 0)
+        p = generate_simple_polygon(n, 500, 0)
 
         # determine volume
         ps = np.roll(p, -1, axis=0)
