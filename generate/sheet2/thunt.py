@@ -27,10 +27,6 @@ class THunt:
 
         return input_str, output_str
 
-
-
-
-
     @staticmethod
     def special_instances():
         yield "3\n4\n1 12 22 5\n0 0 6 0\n1 8 0 1", "42\n"

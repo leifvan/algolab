@@ -9,19 +9,15 @@ rows = [[int(v) for v in line.split(' ')] for line in lines[2:]]
 
 # calc
 
-integral = [[0]*m for _ in range(n)]
+prev_irow = [sum(rows[0][:i]) for i in range(1, m+1)]
+cur_irow = [0]*m
 
-for i,j in product(range(n), range(m)):
-
-    integral[i][j] = rows[i][j]
-
-    if i > 0 and j == 0:
-        integral[i][j] += integral[i-1][j]
-    elif i == 0 and j > 0:
-        integral[i][j] += integral[i][j-1]
-    elif i > 0 and j > 0:
-        integral[i][j] += max(integral[i-1][j], integral[i][j-1])
+for i, row in enumerate(rows[1:]):
+    cur_irow[0] = prev_irow[0] + row[0]
+    for j in range(1,m):
+        cur_irow[j] = max(cur_irow[j-1], prev_irow[j]) + row[j]
+    prev_irow = cur_irow
 
 # output
 
-print(integral[-1][-1])
+print(cur_irow[-1])
