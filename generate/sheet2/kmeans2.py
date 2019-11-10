@@ -6,11 +6,13 @@ from utils import int_to_dec
 class KMeans2:
     @staticmethod
     def get_random_instance():
-        c = np.random.randint(2, 10)
-        q = np.random.randint(1, 1000)
-        r = np.random.randint(1, 10000)
-        centers = np.random.randint(-10000, 10000, size=c)
-        points = np.random.randint(-10000, 10000, size=q)
+        c = np.random.randint(2, 10000)
+        q = np.random.randint(1, 10000)
+        r = np.random.randint(1, 100)
+        centers = np.unique(np.random.randint(-100, 100, size=c))
+        np.random.shuffle(centers)
+        c = len(centers)
+        points = np.random.randint(-100, 100, size=q)
         nn = NearestNeighbors(n_neighbors=2, p=1).fit(np.reshape(centers, (-1, 1)))
         dists, idxs = nn.kneighbors(np.reshape(points, (-1, 1)))
 
