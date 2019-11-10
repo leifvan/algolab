@@ -1,4 +1,5 @@
 import numpy as np
+from utils import generate_star_polygon
 
 
 class AreaPoly:
@@ -6,13 +7,7 @@ class AreaPoly:
     def get_random_instance():
         n = np.random.randint(3,20)
 
-        # generate polygon by polar coordinates
-        angles = np.random.random(n) * 2 * np.pi
-        angles = -np.sort(-angles)
-        radii = np.random.random(n) * 500
-
-        # determine cartesian coords and round
-        p = np.round(radii * np.stack([np.cos(angles), np.sin(angles)])).T
+        p = generate_star_polygon(n, 500, 0)
 
         # determine volume
         ps = np.roll(p, -1, axis=0)

@@ -1,6 +1,6 @@
 from math import log10, floor
 from random import randint
-
+import numpy as np
 
 def int_to_dec(i):
     sgn = '-' if i < 0 else ''
@@ -15,6 +15,23 @@ def int_to_dec(i):
 def dec_to_int(d, j=2):
     d = d.replace('.','')
     return int(d)
+
+
+def generate_star_polygon(n, max_radius, shift_range):
+    # generate polygon by polar coordinates
+    angles = np.random.random(n) * 2 * np.pi
+    angles = -np.sort(-angles)
+    radii = np.random.random(n) * max_radius
+
+    # determine cartesian coords and round
+    p = np.round(radii * np.stack([np.cos(angles), np.sin(angles)])).T
+
+    # shift polygon
+    if shift_range > 0:
+        shift = np.random.randint(-shift_range, shift_range, size=2)
+        p += shift
+
+    return p
 
 
 if __name__ == '__main__':
