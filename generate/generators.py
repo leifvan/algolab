@@ -4,6 +4,7 @@ from collections import defaultdict
 # import all generators
 generators = defaultdict(dict)
 
+
 def get_generator_class_from_module(mod, fname):
     for name, data in inspect.getmembers(mod):
         if name.lower() == fname.lower():
@@ -21,3 +22,13 @@ for dirp in os.listdir(base):
                 name = fp[:-3]
                 mod = importlib.import_module(f"generate.{dirp}.{name}")
                 generators[dirp][name] = get_generator_class_from_module(mod, name)
+
+
+class ProblemGenerator:
+    @staticmethod
+    def get_random_instance():
+        raise NotImplementedError
+
+    @staticmethod
+    def special_instances():
+        raise NotImplementedError
