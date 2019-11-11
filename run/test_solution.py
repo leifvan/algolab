@@ -4,7 +4,6 @@ from generate.generators import generators
 from run.results import TestResults
 from tqdm import tqdm
 from time import time
-from difflib import Differ
 import json
 import sys
 import os
