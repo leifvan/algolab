@@ -1,7 +1,8 @@
 from math import log10, floor
 from random import randint
 import numpy as np
-from shapely.geometry import Polygon, LinearRing
+from shapely.geometry import Polygon
+from shapely.errors import PredicateError
 
 def int_to_dec(i):
     sgn = '-' if i < 0 else ''
@@ -19,26 +20,29 @@ def dec_to_int(d, j=2):
 
 
 def generate_star_polygon(n, max_radius, shift_range):
-    # generate polygon by polar coordinates
-    angles = np.random.random(n) * 2 * np.pi
-    angles = -np.sort(-angles)
-    radii = np.random.random(n) * max_radius
+    while 1:
+        # generate polygon by polar coordinates
+        angles = np.random.random(n) * 2 * np.pi
+        angles = -np.sort(-angles)
+        radii = np.random.random(n) * max_radius
 
-    # determine cartesian coords and round
-    p = np.round(radii * np.stack([np.cos(angles), np.sin(angles)])).T
+        # determine cartesian coords and round
+        p = np.round(radii * np.stack([np.cos(angles), np.sin(angles)])).T
 
-    # shift polygon
-    if shift_range > 0:
-        shift = np.random.randint(-shift_range, shift_range, size=2)
-        p += shift
+        # shift polygon
+        if shift_range > 0:
+            shift = np.random.randint(-shift_range, shift_range, size=2)
+            p += shift
 
-    return p
+        poly = Polygon(shell=p)
+        if poly.is_simple and poly.is_valid:
+            return p
 
 
 def generate_simple_polygon(n, max_radius, shift_range):
     polygon = None
 
-    while polygon is None or not polygon.is_valid:
+    while polygon is None or not polygon.is_valid or not polygon.is_simple:
         # generate random points inside circle of max_radius
         angles = np.random.random(n) * 2 * np.pi
         radii = np.random.random(n) * max_radius
@@ -49,8 +53,11 @@ def generate_simple_polygon(n, max_radius, shift_range):
         # shuffle a bit before retrying completely
         for _ in range(100):
             polygon = Polygon(shell=np.random.shuffle(p))
-            if polygon.is_valid:
-                break
+            try:
+                if polygon.is_valid and polygon.is_simple:
+                    break
+            except PredicateError:
+                polygon = None
 
     if shift_range > 0:
         shift = np.random.randint(-shift_range, shift_range, size=2)
