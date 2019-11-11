@@ -4,7 +4,8 @@ import sys
 
 lines = [l.strip().replace('.', '') for l in sys.stdin]
 c, q, r = [int(v) for v in lines[0].split()]
-centers = sorted(int(v) for v in lines[1:c + 1]) + [float('inf')]
+centers = [int(v) for v in lines[1:c + 1]] + [float('inf')]
+centers = sorted(list(set(centers)))
 points = sorted(((i,int(v)) for i,v in enumerate(lines[c + 1:c+1+q])), key=lambda tup: tup[1])
 
 # calc
