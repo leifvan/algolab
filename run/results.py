@@ -41,6 +41,8 @@ class TestResults:
 
     def get_summary_stats(self):
         total_time = sum(r['duration'] for r in self.results)
+        max_time = max(r['duration'] for r in self.results)
+        min_time = min(r['duration'] for r in self.results)
         avg_time = total_time / len(self.results)
         num_special = sum(1 for r in self.results if r['special'])
         hit_special = sum(1 for r in self.results if r['special'] and r['success'])
@@ -50,6 +52,8 @@ class TestResults:
         num_errors = Counter([r['error'] for r in self.results if 'error' in r])
 
         return Namespace(total_time=total_time,
+                         max_time=max_time,
+                         min_time=min_time,
                          avg_time=avg_time,
                          num_special=num_special,
                          hit_special=hit_special,
@@ -60,7 +64,8 @@ class TestResults:
     def print_summary(self):
         s = self.get_summary_stats()
 
-        print(f"Ran {len(self.results)} instances in {s.total_time:.2f}s (~{s.avg_time:.4f}s/instance)")
+        print(f"Ran {len(self.results)} instances in {s.total_time:.2f}s")
+        print(f"- {s.min_time:.4f} < {s.avg_time:.4f} < {s.max_time:.4f} s/instance")
         print(f"- {s.hit_random}/{s.num_random} random instances correct")
         print(f"- {s.hit_special}/{s.num_special} special instances correct")
 
