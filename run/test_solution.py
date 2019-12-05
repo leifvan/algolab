@@ -28,6 +28,7 @@ if args.lang == 'cpp':
 
 
 # TODO capture more exceptions here
+# TODO make more forgiving with newlines at the end
 def run_instance(instance):
     instance_in, instance_out = instance
 

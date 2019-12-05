@@ -6,7 +6,7 @@ from random import randint
 # read first line: length of vector
 line = sys.stdin.readline().split(" ")
 d = int(line[0])
-d2 = randint(0,d-1)#d // 2
+d2 = randint(0, d - 1)
 R = int("".join(line[1].split(".")))
 R2 = R * R
 
