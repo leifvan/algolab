@@ -59,20 +59,13 @@ for polygon in polygons:
     max_y = min(max_y, cur_max_y)
 
 
-def bb_in_polygon(polygon):
-    return all(point_in_polygon(p, polygon) for p in ((min_x, min_y), (max_x, max_y),
-                                                      (min_x, max_y), (max_x, min_y)))
-
-
-polygons = [p for p in polygons if not bb_in_polygon(p)]
 polygons.sort(key=polygon_volume)
 
-# monte carlo sampling the area:
 bb_area = (max_x - min_x) * (max_y - min_y)
 num_samples = 0
 num_hits = 0
 
-while time() - stime < 4.9:
+while time() - stime < 0.9:
     num_samples += 1
     s = get_sample_in_bb(min_x, min_y, max_x, max_y)
     if all(point_in_polygon(s, poly) for poly in polygons):
