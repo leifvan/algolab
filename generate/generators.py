@@ -32,3 +32,7 @@ class ProblemGenerator:
     @staticmethod
     def special_instances():
         raise NotImplementedError
+
+    @staticmethod
+    def validate_output(given_out, correct_out):
+        return given_out == correct_out

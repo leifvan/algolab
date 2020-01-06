@@ -27,6 +27,10 @@ if args.lang == 'cpp':
         check=True)
 
 
+generator = generators[args.problem_sheet][args.problem_name]
+results = TestResults(args.problem_sheet, args.problem_name, args.timeout, args.lang)
+
+
 # TODO capture more exceptions here
 # TODO make more forgiving with newlines at the end
 def run_instance(instance):
@@ -61,8 +65,15 @@ def run_instance(instance):
             data['error'] = 'execution failed'
             data['success'] = False
         else:
-            if (run_result.stdout == instance_out
-                    or args.verbose == 'debug' and run_result.stdout.endswith(instance_out)):
+            if args.verbose == 'debug':
+                if run_result.stdout.endswith("\n"):
+                    actual_result = run_result.stdout.rsplit('\n',2)[-2]
+                else:
+                    actual_result = run_result.stdout.rsplit('\n', 2)[-1]
+            else:
+                actual_result = run_result.stdout
+
+            if generator.validate_output(actual_result, instance_out):
                 data['success'] = True
             else:
                 data['success'] = False
@@ -73,10 +84,6 @@ def run_instance(instance):
         data['stderr'] = run_result.stderr
 
     return data
-
-
-generator = generators[args.problem_sheet][args.problem_name]
-results = TestResults(args.problem_sheet, args.problem_name, args.timeout, args.lang)
 
 
 def run_instances(instances, desc, total, special):
