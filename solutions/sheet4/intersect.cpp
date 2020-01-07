@@ -8,7 +8,7 @@
 
 using namespace std;
 
-typedef float coord_type;
+typedef double coord_type;
 
 struct Point
 {
@@ -48,9 +48,9 @@ int pointInPolygon(const Point p1, const Polygon &polygon)
     int c = 0;
     int n = polygon.size();
     Point p2 = Point(11, p1.y);
-    for(int i = 0; i <= n; i++) {
-        Point q1 = polygon[i];
-        Point q2 = polygon[(i+1)%n];
+    for(int i = 0; i < n; i++) {
+        Point q1 = polygon.at(i);
+        Point q2 = polygon.at((i+1)%n);
         if(linesIntersect(q1,q2,p1,p2)) { c++; }
     }
 
@@ -71,10 +71,10 @@ coord_type polygonVolume(const Polygon polygon)
 {
     coord_type sum = 0;
     int n = polygon.size();
-    for(int i = 0; i <= n; i++)
+    for(int i = 0; i < n; i++)
     {
-        Point p1 = polygon[i];
-        Point p2 = polygon[(i+1)%n];
+        Point p1 = polygon.at(i);
+        Point p2 = polygon.at((i+1)%n);
         sum += (p1.x + p2.x) * (p1.y - p2.y);
     }
     return 0.5 * sum;
@@ -123,9 +123,9 @@ int main()
     }
 
     // sort polygons by size to improve early stopping
-    sort(polygons.begin(), polygons.end(), [](Polygon p1, Polygon p2) {return polygonVolume(p1) > polygonVolume(p2); });
+    // sort(polygons.begin(), polygons.end(), [](Polygon p1, Polygon p2) {return polygonVolume(p1) > polygonVolume(p2); });
 
-    int numSamples = 800000;
+    int numSamples = 600000;
     int numHits = 0;
 
     coord_type bbArea = (maxX-minX) * (maxY-minY);
