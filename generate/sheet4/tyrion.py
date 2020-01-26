@@ -3,7 +3,7 @@ from random import sample, randint
 class Tyrion:
     @staticmethod
     def get_random_instance():
-        n = randint(4,20)
+        n = randint(4,1000)
         houses = [f"house{i}" for i in range(n)]
         is_friend = {h: randint(0,1) for h in houses}
         friends = sum(is_friend.values())
