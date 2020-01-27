@@ -45,8 +45,19 @@ while len(members) > k:
     # join two closest clusters together
     members[i].extend(members[j])
     del members[j]
-    icd = {(i, j): min(dist_mat[v][w] for v in members[i] for w in members[j])
-           for i, j in icd if i in members and j in members}
+
+    distances_to_j = {jx if ix == j else ix: d for (ix,jx),d in icd.items() if ix == j or jx == j}
+
+    for ix, jx in combinations(range(n), 2):
+        if (ix == j or jx == j) and (ix,jx) in icd:
+            del icd[ix,jx]
+
+    for (ix, jx), cur_min in icd.items():
+        if ix == i:
+            icd[ix, jx] = min(cur_min, distances_to_j[jx])
+        elif jx == i:
+            icd[ix, jx] = min(cur_min, distances_to_j[ix])
+
 
 print("looperz took", time() - start_time)
 
