@@ -22,27 +22,21 @@ for i in range(n):
 for i, j, weight in edges:
     dist_mat[i][j] = dist_mat[j][i] = weight
 
-#print("reading took", time() - start_time)
-
 start_time = time()
 
 # floyd warshall
 for r in range(n):
-    for i, j in combinations(range(n), 2):
-    # for i in range(n):
-    #     for j in range(i+1): # we use that the adjacency is symmetric
-        if dist_mat[i][r] + dist_mat[r][j] < dist_mat[i][j]:
-            dist_mat[i][j] = dist_mat[i][r] + dist_mat[r][j]
+    for i in range(n):
+        for j in range(i+1):
+            if dist_mat[i][r] + dist_mat[r][j] < dist_mat[i][j]:
+                dist_mat[i][j] = dist_mat[j][i] = dist_mat[i][r] + dist_mat[r][j]
 
-#print("floyd took", time() -start_time)
+print("floyd took", time() -start_time)
 start_time = time()
 
 # init: all points are their own cluster
 members = {v: [v] for v in range(n)}
 icd = {(i, j): dist_mat[i][j] for i, j in combinations(range(n), 2)}
-
-#print("init looperz took", time()-start_time)
-start_time = time()
 
 while len(members) > k:
     # find min pair
@@ -54,7 +48,7 @@ while len(members) > k:
     icd = {(i, j): min(dist_mat[v][w] for v in members[i] for w in members[j])
            for i, j in icd if i in members and j in members}
 
-#print("looperz took", time() - start_time)
+print("looperz took", time() - start_time)
 
 min_dist = min(icd.values())
 
