@@ -2,6 +2,7 @@ import sys
 from itertools import combinations
 from operator import itemgetter
 from time import time
+from collections import defaultdict
 
 start_time = time()
 
@@ -32,28 +33,31 @@ print("floyd took", time() -start_time)
 start_time = time()
 
 # init: all points are their own cluster
-members = {v: [v] for v in range(n)}
 icd = {(i, j): dist_mat[i][j] for i, j in combinations(range(n), 2)}
+icd_i = defaultdict(set)
 
-while len(members) > k:
+for i,j in icd:
+    icd_i[i].add((i,j))
+    icd_i[j].add((i,j))
+
+for _ in range(n-k):
     # find min pair
     i, j = min(icd.items(), key=itemgetter(1))[0]
 
     # join two closest clusters together
-    members[i].extend(members[j])
-    del members[j]
+    tups = list(icd_i[j])
+    for ix, jx in tups:
+        icd_i[ix].remove((ix, jx))
+        icd_i[jx].remove((ix, jx))
 
-    distances_to_j = {jx if ix == j else ix: d for (ix,jx),d in icd.items() if ix == j or jx == j}
-
-    for ix, jx in combinations(range(n), 2):
-        if (ix == j or jx == j) and (ix,jx) in icd:
-            del icd[ix,jx]
-
-    for (ix, jx), cur_min in icd.items():
+    for ix, jx in icd_i[i]:
         if ix == i:
-            icd[ix, jx] = min(cur_min, distances_to_j[jx])
+            icd[ix, jx] = min(icd[ix, jx], icd[jx, j] if jx < j else icd[j, jx])
         elif jx == i:
-            icd[ix, jx] = min(cur_min, distances_to_j[ix])
+            icd[ix, jx] = min(icd[ix, jx], icd[ix, j] if ix < j else icd[j, ix])
+
+    for ix, jx in tups:
+        del icd[ix, jx]
 
 
 print("loop took", time() - start_time)

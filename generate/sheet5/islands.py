@@ -20,7 +20,7 @@ class Islands:
 
     @staticmethod
     def make_instance():
-        n = randint(3, 150)
+        n = randint(3, 200)
         k = randint(2, n)
 
         g = nx.connected_watts_strogatz_graph(n, min(n, randint(1, 10)), p=0.1 + random()*0.8)
