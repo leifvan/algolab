@@ -25,11 +25,8 @@ for i, j, weight in edges:
 start_time = time()
 
 # floyd warshall
-for r in range(n):
-    for i in range(n):
-        for j in range(i+1):
-            if dist_mat[i][r] + dist_mat[r][j] < dist_mat[i][j]:
-                dist_mat[i][j] = dist_mat[j][i] = dist_mat[i][r] + dist_mat[r][j]
+for i,j,r in combinations(range(n), 3):
+    dist_mat[i][j] = dist_mat[j][i] = min(dist_mat[i][j], dist_mat[i][r] + dist_mat[r][j])
 
 print("floyd took", time() -start_time)
 start_time = time()
@@ -59,8 +56,7 @@ while len(members) > k:
             icd[ix, jx] = min(cur_min, distances_to_j[ix])
 
 
-print("looperz took", time() - start_time)
+print("loop took", time() - start_time)
 
 min_dist = min(icd.values())
-
 print(min_dist)
