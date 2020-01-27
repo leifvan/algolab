@@ -2,7 +2,7 @@ import sys
 from itertools import combinations
 from operator import itemgetter
 from time import time
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 start_time = time()
 
@@ -35,7 +35,6 @@ for i, j, _ in edges:
 # dijkstra
 for s in range(n):
     dist = [MAX_VAL]*n
-    prev = [None]*n
     dist[s] = 0
     queue = sorted(range(n), key=lambda v: dist[v])
 
@@ -44,8 +43,7 @@ for s in range(n):
         for v in edges_i[u]:
             if dist[u] + dist_mat[u][v] < dist[v]:
                 dist[v] = dist[u] + dist_mat[u][v]
-                prev[v] = u
-                queue = sorted(queue, key=lambda v: dist[v])
+                queue.sort(key=lambda v: dist[v])
 
     new_dist_mat[s] = dist
 dist_mat = new_dist_mat
@@ -60,6 +58,7 @@ icd_i = defaultdict(set)
 for i,j in icd:
     icd_i[i].add((i,j))
     icd_i[j].add((i,j))
+
 
 for _ in range(n-k):
     # find min pair
@@ -79,6 +78,7 @@ for _ in range(n-k):
 
     for ix, jx in tups:
         del icd[ix, jx]
+
 
 
 # print("loop took", time() - start_time)
