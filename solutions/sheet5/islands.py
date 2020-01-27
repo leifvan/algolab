@@ -23,14 +23,35 @@ for i in range(n):
 for i, j, weight in edges:
     dist_mat[i][j] = dist_mat[j][i] = weight
 
-start_time = time()
+# start_time = time()
 
-# floyd warshall
-for i,j,r in combinations(range(n), 3):
-    dist_mat[i][j] = dist_mat[j][i] = min(dist_mat[i][j], dist_mat[i][r] + dist_mat[r][j])
+new_dist_mat = [None] * n
 
-print("floyd took", time() -start_time)
-start_time = time()
+edges_i = defaultdict(list)
+for i, j, _ in edges:
+    edges_i[i].append(j)
+    edges_i[j].append(i)
+
+# dijkstra
+for s in range(n):
+    dist = [MAX_VAL]*n
+    prev = [None]*n
+    dist[s] = 0
+    queue = sorted(range(n), key=lambda v: dist[v])
+
+    while len(queue) > 0:
+        u = queue.pop()
+        for v in edges_i[u]:
+            if dist[u] + dist_mat[u][v] < dist[v]:
+                dist[v] = dist[u] + dist_mat[u][v]
+                prev[v] = u
+                queue = sorted(queue, key=lambda v: dist[v])
+
+    new_dist_mat[s] = dist
+dist_mat = new_dist_mat
+
+# print("dijkstra took", time() -start_time)
+# start_time = time()
 
 # init: all points are their own cluster
 icd = {(i, j): dist_mat[i][j] for i, j in combinations(range(n), 2)}
@@ -60,7 +81,7 @@ for _ in range(n-k):
         del icd[ix, jx]
 
 
-print("loop took", time() - start_time)
+# print("loop took", time() - start_time)
 
 min_dist = min(icd.values())
 print(min_dist)
