@@ -64,30 +64,20 @@ int main()
 	for(int s = 0; s < n; s++) {
 	    vector<int> dist(n, MAX_VAL);
 	    dist[s] = 0;
-        vector<int> queue;
-	    for(int k = 0; k < n; k++) {queue.push_back(k);}
-
-	    sort(queue.begin(), queue.end(), [&dist](int v1, int v2){return dist[v1] < dist[v2];});
-
-	    while(!queue.empty()) {
-	        int u = queue.back();
-	        queue.pop_back();
+	    for(int u = 0; u < n; u++) {
 	        for(auto v : edges_i[u]) {
 	            if(dist[u] + dist_mat[u][v] < dist[v]) {
 	                dist[v] = dist[u] + dist_mat[u][v];
-	                sort(queue.begin(), queue.end(), [&dist](int v1, int v2){return dist[v1] < dist[v2];});
 	            }
 	        }
 	    }
-
 	    icd.push_back(dist);
 	}
 
+    int i, j;
     for(int r = 0; r < n-k; r++) {
         // find clusters with minimal dist
-        tuple<int, int> coords = find_triu_min(icd);
-        int i = get<0>(coords);
-        int j = get<1>(coords);
+        tie(i, j) = find_triu_min(icd);
 
         for(int k = 0; k < (int)icd.size(); k++) {
             icd[i][k] = icd[k][i] = min(icd[i][k], icd[j][k]);
@@ -98,9 +88,7 @@ int main()
         }
         icd.erase(icd.begin() + j);
     }
-    tuple<int, int> coords = find_triu_min(icd);
-    int i = get<0>(coords);
-    int j = get<1>(coords);
+    tie(i, j) = find_triu_min(icd);
     cout << icd[i][j] << endl;
     return 0;
 }

@@ -13,17 +13,15 @@ m = int(lines[2])
 
 edges = [tuple(int(v) for v in line.split()) for line in lines[3:]]
 
-MAX_VAL = 100000
+MAX_VAL = 1000000
 
-dist_mat = [[MAX_VAL]*n for _ in range(n)]
+dist_mat = [[MAX_VAL] * n for _ in range(n)]
 
 for i in range(n):
     dist_mat[i][i] = 0
 
 for i, j, weight in edges:
     dist_mat[i][j] = dist_mat[j][i] = weight
-
-# start_time = time()
 
 new_dist_mat = [None] * n
 
@@ -34,54 +32,43 @@ for i, j, _ in edges:
 
 # dijkstra
 for s in range(n):
-    dist = [MAX_VAL]*n
+    dist = [MAX_VAL] * n
     dist[s] = 0
-    queue = sorted(range(n), key=lambda v: dist[v])
+    #queue = list(range(n))#sorted(range(n), key=lambda v: dist[v])
 
-    while len(queue) > 0:
-        u = queue.pop()
+    for u in range(n):
+        #u = queue.pop()
         for v in edges_i[u]:
             if dist[u] + dist_mat[u][v] < dist[v]:
                 dist[v] = dist[u] + dist_mat[u][v]
-                queue.sort(key=lambda v: dist[v])
+                #queue.sort(key=lambda v: dist[v])
 
     new_dist_mat[s] = dist
 dist_mat = new_dist_mat
 
-# print("dijkstra took", time() -start_time)
-# start_time = time()
+print("dijkstra in {:.3f}".format(time()-start_time))
+start_time = time()
 
-# init: all points are their own cluster
-icd = {(i, j): dist_mat[i][j] for i, j in combinations(range(n), 2)}
-icd_i = defaultdict(set)
+nearest_vertex = [None] * n
 
-for i,j in icd:
-    icd_i[i].add((i,j))
-    icd_i[j].add((i,j))
+for i in range(n):
+    nearest_vertex[i] = min(enumerate(dist_mat[i]), key=lambda t: t[1] if i != t[0] else MAX_VAL)
 
+for _ in range(n - k):
+    i, (j, d) = min(enumerate(nearest_vertex), key=lambda tup: tup[1][1])
 
-for _ in range(n-k):
-    # find min pair
-    i, j = min(icd.items(), key=itemgetter(1))[0]
+    # merge i,j into i
+    for k in range(n):
+        dist_mat[i][k] = dist_mat[k][i] = min(dist_mat[i][k], dist_mat[j][k])
+        dist_mat[j][k] = dist_mat[k][j] = MAX_VAL
 
-    # join two closest clusters together
-    tups = list(icd_i[j])
-    for ix, jx in tups:
-        icd_i[ix].remove((ix, jx))
-        icd_i[jx].remove((ix, jx))
+    dist_mat[i][j] = MAX_VAL
 
-    for ix, jx in icd_i[i]:
-        if ix == i:
-            icd[ix, jx] = min(icd[ix, jx], icd[jx, j] if jx < j else icd[j, jx])
-        elif jx == i:
-            icd[ix, jx] = min(icd[ix, jx], icd[ix, j] if ix < j else icd[j, ix])
+    nearest_vertex[i] = min(enumerate(dist_mat[i]), key=lambda t: t[1] if i != t[0] and j != t[0] else MAX_VAL)
+    nearest_vertex[j] = (-1, MAX_VAL)
 
-    for ix, jx in tups:
-        del icd[ix, jx]
+    nearest_vertex = [(i, dr) if r == i or r == j else (r, dr) for r, dr in nearest_vertex]
 
-
-
-# print("loop took", time() - start_time)
-
-min_dist = min(icd.values())
-print(min_dist)
+print("loop in {:.3f}".format(time()-start_time))
+_, result = min(nearest_vertex, key=itemgetter(1))
+print(result)
