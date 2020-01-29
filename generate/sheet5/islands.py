@@ -20,7 +20,7 @@ class Islands:
 
     @staticmethod
     def make_instance():
-        n = randint(3, 500)
+        n = randint(3, 20000)
         k = randint(2, n)
 
         g = nx.connected_watts_strogatz_graph(n, min(n, randint(1, 10)), p=0.1 + random()*0.8)
@@ -28,11 +28,11 @@ class Islands:
         np.fill_diagonal(dist_mat, 0)
 
         for i, j in g.edges():
-            g[i][j]['weight'] = randint(1, 10)
+            dist_mat[i,j] = dist_mat[j,i] = randint(1,100)
 
-        for s, target_dict in nx.shortest_path_length(g, weight="weight"):
-            for t, val in target_dict.items():
-                dist_mat[s, t] = dist_mat[t, s] = val
+        # for s, target_dict in nx.shortest_path_length(g, weight="weight"):
+        #     for t, val in target_dict.items():
+        #         dist_mat[s, t] = dist_mat[t, s] = val
 
         ac = AgglomerativeClustering(n_clusters=k,
                                      affinity='precomputed',
@@ -52,7 +52,7 @@ class Islands:
         result = icd.min()
 
         str_in = '\n'.join(str(v) for v in [n, k, len(g.edges())]) + '\n'
-        str_in += '\n'.join(f"{i} {j} {g[i][j]['weight']}" for i, j in g.edges())
+        str_in += '\n'.join(f"{i} {j} {dist_mat[i][j]}" if random()<0.5 else f"{j} {i} {dist_mat[i][j]}" for i, j in g.edges())
 
         str_out = str(int(result))
 
