@@ -91,7 +91,7 @@ class Fields:
     @staticmethod
     def get_random_instance():
 
-        r = randint(2,500)
+        r = randint(2,200)
         field = np.random.randint(0,2,size=(r,r))
         #print("start countin' a whopping",r,"field")
         count = get_count(field, r)
@@ -110,6 +110,10 @@ class Fields:
     def special_instances():
         yield "3\n111\n110\n011","2\n"
         yield "2000\n"+("1"*2000+'\n')*2000, str((0.5 * (2000 - 1) * 2000) ** 2)+"\n"
+
+    @staticmethod
+    def validate_output(given_out, correct_out):
+        return given_out.replace('\n', '') == correct_out.replace('\n', '')
 
 
 if __name__ == '__main__':
